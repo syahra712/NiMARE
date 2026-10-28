@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import operator
 import os
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -644,9 +645,9 @@ class Studyset:
         # The merged studyset only has this side's basepath, so resolve the
         # other side's relative images against their own location first: its
         # basepath, or the working directory when it has none.
-        right_basepath = None
-        if right.basepath != self.basepath:
-            right_basepath = os.path.abspath(right.basepath or os.curdir)
+        left_base = Path(os.path.abspath(self.basepath or os.curdir))
+        right_base = Path(os.path.abspath(right.basepath or os.curdir))
+        right_basepath = str(right_base) if right_base != left_base else None
         right_doc = to_nimads_dict(right.store, right.view.index, basepath=right_basepath)
         left_doc["id"] = f"{self.id}_{right.id}"
         left_doc["name"] = f"Merged: {self.name} + {right.name}"
